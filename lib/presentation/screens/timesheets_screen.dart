@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:odoo_apexive/models/task_timer.dart';
 import 'package:odoo_apexive/presentation/styles/app_dimens.dart';
 import 'package:odoo_apexive/presentation/widgets/gradient_background.dart';
 import 'package:odoo_apexive/presentation/widgets/main_app_bar.dart';
@@ -19,7 +20,12 @@ class TimesheetsScreen extends StatelessWidget {
         minimum: const EdgeInsets.all(AppDimens.m),
         child: ListView.separated(
           itemCount: 3,
-          itemBuilder: (context, index) => const TimerCard(),
+          itemBuilder: (context, index) => TimerCard(
+            taskTimer: TaskTimer(
+              project: "iOS app deployment with odd",
+              task: "SO056 - Booqio V2",
+            ),
+          ),
           separatorBuilder: (context, index) => const SizedBox(
             height: AppDimens.s,
           ),

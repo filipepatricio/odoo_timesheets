@@ -1,12 +1,16 @@
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
+import 'package:odoo_apexive/models/task_timer.dart';
 import 'package:odoo_apexive/presentation/styles/app_dimens.dart';
 import 'package:odoo_apexive/presentation/styles/vector_graphics.dart';
 
 class TimerCard extends StatelessWidget {
   const TimerCard({
     super.key,
+    required this.taskTimer,
   });
+
+  final TaskTimer taskTimer;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +35,7 @@ class TimerCard extends StatelessWidget {
                   _CardTextLine(
                     svgIconPath: AppVectorGraphics.starBorderOutlined,
                     text: Text(
-                      'iOS app deployment with odd',
+                      taskTimer.project,
                       style: Theme.of(context)
                           .textTheme
                           .titleMedium!
@@ -42,7 +46,7 @@ class TimerCard extends StatelessWidget {
                   _CardTextLine(
                     svgIconPath: AppVectorGraphics.suitcaseBorderOutlined,
                     text: Text(
-                      'SO056 - Booqio V2',
+                      taskTimer.task,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
@@ -50,7 +54,7 @@ class TimerCard extends StatelessWidget {
                   _CardTextLine(
                     svgIconPath: AppVectorGraphics.clockBorderOutlined,
                     text: Text(
-                      'iOS app deployment',
+                      'Deadline 07/20/2023',
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
