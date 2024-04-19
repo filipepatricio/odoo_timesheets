@@ -29,55 +29,61 @@ class TimerCard extends StatelessWidget {
             ),
             const SizedBox(width: AppDimens.s),
             Flexible(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _CardTextLine(
-                    svgIconPath: AppVectorGraphics.starBorderOutlined,
-                    text: Text(
-                      taskTimer.project,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium!
-                          .copyWith(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  const SizedBox(height: AppDimens.xs),
-                  _CardTextLine(
-                    svgIconPath: AppVectorGraphics.suitcaseBorderOutlined,
-                    text: Text(
-                      taskTimer.task,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                  ),
-                  const SizedBox(height: AppDimens.xs),
-                  _CardTextLine(
-                    svgIconPath: AppVectorGraphics.clockBorderOutlined,
-                    text: Text(
-                      'Deadline 07/20/2023',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                  ),
-                ],
+              child: _InfoColumn(
+                task: taskTimer.task,
+                project: taskTimer.project,
               ),
             ),
-            Container(
-              width: 104,
-              alignment: Alignment.center,
-              height: AppDimens.xxxl,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onSurface,
-                borderRadius: BorderRadius.circular(AppDimens.xc),
-              ),
-              child: Text(
-                '00:30',
-                style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onPrimaryContainer),
-              ),
-            )
+            const _ClockButton()
           ],
         ),
       ),
+    );
+  }
+}
+
+class _InfoColumn extends StatelessWidget {
+  const _InfoColumn({
+    super.key,
+    required this.task,
+    required this.project,
+  });
+
+  final String task;
+  final String project;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _CardTextLine(
+          svgIconPath: AppVectorGraphics.starBorderOutlined,
+          text: Text(
+            task,
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium!
+                .copyWith(fontWeight: FontWeight.bold),
+          ),
+        ),
+        const SizedBox(height: AppDimens.xs),
+        _CardTextLine(
+          svgIconPath: AppVectorGraphics.suitcaseBorderOutlined,
+          text: Text(
+            project,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ),
+        const SizedBox(height: AppDimens.xs),
+        _CardTextLine(
+          svgIconPath: AppVectorGraphics.clockBorderOutlined,
+          text: Text(
+            'Deadline 07/20/2023',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -94,7 +100,7 @@ class _CardTextLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
           alignment: Alignment.center,
@@ -111,6 +117,35 @@ class _CardTextLine extends StatelessWidget {
         const SizedBox(width: AppDimens.xs),
         Flexible(child: text)
       ],
+    );
+  }
+}
+
+class _ClockButton extends StatelessWidget {
+  const _ClockButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppDimens.m,
+        vertical: AppDimens.sl,
+      ),
+      alignment: Alignment.center,
+      height: AppDimens.xxxl,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.onSurface,
+        borderRadius: BorderRadius.circular(AppDimens.xc),
+      ),
+      child: Text(
+        '00:30',
+        style: Theme.of(context)
+            .textTheme
+            .labelLarge!
+            .copyWith(color: Theme.of(context).colorScheme.onPrimaryContainer),
+      ),
     );
   }
 }

@@ -22,8 +22,8 @@ class TimesheetsScreen extends StatelessWidget {
           itemCount: 3,
           itemBuilder: (context, index) => TimerCard(
             taskTimer: TaskTimer(
-              project: "iOS app deployment with odd",
-              task: "SO056 - Booqio V2",
+              task: "iOS app deployment with odd",
+              project: "SO056 - Booqio V2",
             ),
           ),
           separatorBuilder: (context, index) => const SizedBox(
