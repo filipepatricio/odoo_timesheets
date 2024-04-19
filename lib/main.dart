@@ -14,6 +14,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.light(
+          onPrimaryContainer: const Color(0xFF000000),
           onSurface: const Color(0xFFFFFFFF),
           secondaryContainer: const Color(0xFFFFFFFF).withOpacity(0.16),
           onSecondary: const Color(0xFFFFFFFF),
