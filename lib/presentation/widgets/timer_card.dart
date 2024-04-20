@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:odoo_apexive/blocs/bloc_exports.dart';
 import 'package:odoo_apexive/models/task_timer.dart';
 import 'package:odoo_apexive/models/ticker.dart';
+import 'package:odoo_apexive/presentation/screens/task_detail_screen.dart';
 import 'package:odoo_apexive/presentation/styles/app_dimens.dart';
 import 'package:odoo_apexive/presentation/styles/vector_graphics.dart';
 import 'package:odoo_apexive/utils/utils.dart';
@@ -17,32 +18,74 @@ class TimerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final timerBloc = TimerBloc(
+      ticker: const Ticker(),
+      taskTimer: taskTimer,
+    );
     return BlocProvider(
-      create: (context) => TimerBloc(
-        ticker: const Ticker(),
-        duration: taskTimer.duration,
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppDimens.s),
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.08)),
-        padding: const EdgeInsets.all(AppDimens.m),
-        child: IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const YellowBar(),
-              const SizedBox(width: AppDimens.s),
-              Flexible(
-                child: _InfoColumn(
-                  task: taskTimer.task,
-                  project: taskTimer.project,
-                ),
+      create: (context) => timerBloc,
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BlocProvider.value(
+                value: timerBloc,
+                child: const TaskDetailScreen(),
               ),
-              const _ClockButton()
-            ],
+            ),
+          );
+        },
+        child: _Card(taskTimer: taskTimer),
+      ),
+    );
+  }
+}
+
+class _Card extends StatelessWidget {
+  const _Card({
+    super.key,
+    required this.taskTimer,
+  });
+
+  final TaskTimer taskTimer;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(AppDimens.s),
+          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.08)),
+      padding: const EdgeInsets.all(AppDimens.m),
+      child: _Data(taskTimer: taskTimer),
+    );
+  }
+}
+
+class _Data extends StatelessWidget {
+  const _Data({
+    super.key,
+    required this.taskTimer,
+  });
+
+  final TaskTimer taskTimer;
+
+  @override
+  Widget build(BuildContext context) {
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const YellowBar(),
+          const SizedBox(width: AppDimens.s),
+          Flexible(
+            child: _InfoColumn(
+              task: taskTimer.task,
+              project: taskTimer.project,
+            ),
           ),
-        ),
+          const _ClockButton()
+        ],
       ),
     );
   }

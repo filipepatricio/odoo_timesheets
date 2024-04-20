@@ -1,40 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:odoo_apexive/presentation/styles/app_dimens.dart';
 
 class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final String titleText;
-
   const MainAppBar({
-    required this.titleText,
     super.key,
+    this.title,
+    this.actions,
+    this.leading,
+    this.centerTitle,
   });
+
+  final Text? title;
+  final List<Widget>? actions;
+  final Widget? leading;
+  final bool? centerTitle;
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: Colors.transparent,
-      centerTitle: false,
-      title: Text(
-        titleText,
-        style: Theme.of(context).textTheme.headlineLarge,
-      ),
-      actions: [
-        Container(
-          width: AppDimens.xxxl,
-          height: AppDimens.xxxl,
-          margin: const EdgeInsets.only(right: AppDimens.m),
-          decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.secondaryContainer,
-              borderRadius:
-                  const BorderRadius.all(Radius.circular(AppDimens.sl))),
-          child: Center(
-            child: Icon(
-              Icons.add,
-              color: Theme.of(context).colorScheme.onSecondary,
-            ),
-          ),
-        ),
-      ],
+      centerTitle: centerTitle,
+      title: title,
+      actions: actions,
+      leading: leading,
     );
   }
 
