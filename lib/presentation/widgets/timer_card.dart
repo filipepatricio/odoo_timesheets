@@ -1,8 +1,11 @@
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
+import 'package:odoo_apexive/blocs/bloc_exports.dart';
 import 'package:odoo_apexive/models/task_timer.dart';
+import 'package:odoo_apexive/models/ticker.dart';
 import 'package:odoo_apexive/presentation/styles/app_dimens.dart';
 import 'package:odoo_apexive/presentation/styles/vector_graphics.dart';
+import 'package:odoo_apexive/utils/utils.dart';
 
 class TimerCard extends StatelessWidget {
   const TimerCard({
@@ -14,30 +17,47 @@ class TimerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(AppDimens.s),
-          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.08)),
-      padding: const EdgeInsets.all(AppDimens.m),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              width: AppDimens.xxs,
-              color: const Color(0xFFFFC629),
-            ),
-            const SizedBox(width: AppDimens.s),
-            Flexible(
-              child: _InfoColumn(
-                task: taskTimer.task,
-                project: taskTimer.project,
+    return BlocProvider(
+      create: (context) => TimerBloc(
+        ticker: const Ticker(),
+        duration: taskTimer.duration,
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppDimens.s),
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.08)),
+        padding: const EdgeInsets.all(AppDimens.m),
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const YellowBar(),
+              const SizedBox(width: AppDimens.s),
+              Flexible(
+                child: _InfoColumn(
+                  task: taskTimer.task,
+                  project: taskTimer.project,
+                ),
               ),
-            ),
-            const _ClockButton()
-          ],
+              const _ClockButton()
+            ],
+          ),
         ),
       ),
+    );
+  }
+}
+
+class YellowBar extends StatelessWidget {
+  const YellowBar({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: AppDimens.xxs,
+      color: const Color(0xFFFFC629),
     );
   }
 }
@@ -128,24 +148,68 @@ class _ClockButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppDimens.m,
-        vertical: AppDimens.sl,
-      ),
-      alignment: Alignment.center,
-      height: AppDimens.xxxl,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.onSurface,
-        borderRadius: BorderRadius.circular(AppDimens.xc),
-      ),
-      child: Text(
-        '00:30',
-        style: Theme.of(context)
-            .textTheme
-            .labelLarge!
-            .copyWith(color: Theme.of(context).colorScheme.onPrimaryContainer),
-      ),
+    return BlocBuilder<TimerBloc, TimerState>(
+      buildWhen: (prev, state) => prev.runtimeType != state.runtimeType,
+      builder: (context, state) {
+        final duration =
+            context.select((TimerBloc bloc) => bloc.state.duration);
+
+        final textColor = state is TimerRunInProgress
+            ? Theme.of(context).colorScheme.onPrimaryContainer
+            : Theme.of(context).colorScheme.onSecondaryContainer;
+
+        final backgroundColor = state is TimerRunInProgress
+            ? Theme.of(context).colorScheme.onSurface
+            : Theme.of(context).colorScheme.onSurface.withOpacity(0.08);
+
+        final iconData =
+            state is TimerRunInProgress ? Icons.pause : Icons.play_arrow;
+
+        return GestureDetector(
+          onTap: () {
+            switch (state) {
+              case TimerInitial():
+                context.read<TimerBloc>().add(const TimerStarted());
+                break;
+              case TimerRunInProgress():
+                context.read<TimerBloc>().add(const TimerPaused());
+                break;
+              case TimerRunPause():
+                context.read<TimerBloc>().add(const TimerResumed());
+                break;
+              case TimerRunComplete():
+                context.read<TimerBloc>().add(const TimerReset());
+                context.read<TimerBloc>().add(const TimerStarted());
+                break;
+            }
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppDimens.m,
+              vertical: AppDimens.sl,
+            ),
+            alignment: Alignment.center,
+            height: AppDimens.xxxl,
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              borderRadius: BorderRadius.circular(AppDimens.xc),
+            ),
+            child: Row(
+              children: [
+                Text(
+                  Utils.formatDuration(duration),
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelLarge!
+                      .copyWith(color: textColor),
+                ),
+                const SizedBox(width: AppDimens.xs),
+                Icon(iconData, color: textColor)
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

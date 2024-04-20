@@ -4,7 +4,7 @@ class TaskTimer extends Equatable {
   TaskTimer({
     required this.task,
     required this.project,
-    this.duration,
+    this.duration = 30,
     this.description,
     this.isFavourite,
   }) {
@@ -13,8 +13,7 @@ class TaskTimer extends Equatable {
 
   final String task;
   final String project;
-
-  final int? duration;
+  final int duration;
   final String? description;
 
   bool? isFavourite;
