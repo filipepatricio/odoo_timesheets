@@ -7,4 +7,6 @@ class AppVectorGraphics {
       'assets/vector_graphics/clock_border_outlined.svg';
   static const String suitcaseBorderOutlined =
       'assets/vector_graphics/suitcase_border_outlined.svg';
+  static const String starFilled = 'assets/vector_graphics/star_filled.svg';
+  static const String chevronDown = 'assets/vector_graphics/chevron_down.svg';
 }

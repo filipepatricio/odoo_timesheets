@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:odoo_apexive/blocs/timer_bloc/timer_bloc.dart';
 
 class TaskTimer extends Equatable {
   TaskTimer({
@@ -6,9 +7,9 @@ class TaskTimer extends Equatable {
     required this.project,
     this.duration = 30,
     this.description,
-    this.isFavourite,
+    this.isFavourite = false,
   }) {
-    isFavourite = isFavourite ?? false;
+    timerBloc = TimerBloc(duration: duration);
   }
 
   final String task;
@@ -16,7 +17,9 @@ class TaskTimer extends Equatable {
   final int duration;
   final String? description;
 
-  bool? isFavourite;
+  bool isFavourite;
+
+  late TimerBloc timerBloc;
 
   @override
   List<Object?> get props => [
@@ -25,5 +28,6 @@ class TaskTimer extends Equatable {
         duration,
         description,
         isFavourite,
+        timerBloc,
       ];
 }

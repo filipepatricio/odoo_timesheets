@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:odoo_apexive/models/task_timer.dart';
+import 'package:odoo_apexive/blocs/bloc_exports.dart';
 import 'package:odoo_apexive/presentation/screens/create_timer_screen.dart';
 import 'package:odoo_apexive/presentation/styles/app_dimens.dart';
 import 'package:odoo_apexive/presentation/widgets/gradient_scaffold.dart';
 import 'package:odoo_apexive/presentation/widgets/main_app_bar.dart';
 import 'package:odoo_apexive/presentation/widgets/timer_card.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TimesheetsScreen extends StatelessWidget {
   const TimesheetsScreen({super.key});
@@ -15,25 +16,23 @@ class TimesheetsScreen extends StatelessWidget {
       appBar: MainAppBar(
         centerTitle: false,
         title: Text(
-          "Timesheets",
+          AppLocalizations.of(context)!.timeSheets,
           style: Theme.of(context).textTheme.headlineLarge,
         ),
         actions: const [_CreateButton()],
       ),
-      body: SafeArea(
-        minimum: const EdgeInsets.all(AppDimens.m),
-        child: ListView.separated(
-          itemCount: 3,
-          itemBuilder: (context, index) => TimerCard(
-            taskTimer: TaskTimer(
-              task: "iOS app deployment with odd",
-              project: "SO056 - Booqio V2",
+      body: BlocBuilder<TaskListBloc, TaskListState>(
+        builder: (context, state) {
+          return ListView.separated(
+            itemCount: state.taskTimerList.length,
+            itemBuilder: (context, index) => TimerCard(
+              taskTimer: state.taskTimerList[index],
             ),
-          ),
-          separatorBuilder: (context, index) => const SizedBox(
-            height: AppDimens.s,
-          ),
-        ),
+            separatorBuilder: (context, index) => const SizedBox(
+              height: AppDimens.s,
+            ),
+          );
+        },
       ),
     );
   }

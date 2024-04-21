@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:odoo_apexive/presentation/styles/app_dimens.dart';
 
 class GradientScaffold extends StatelessWidget {
   const GradientScaffold({super.key, required this.appBar, required this.body});
@@ -12,7 +13,10 @@ class GradientScaffold extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: appBar,
-        body: body,
+        body: SafeArea(
+          minimum: const EdgeInsets.all(AppDimens.m),
+          child: body,
+        ),
       ),
     );
   }

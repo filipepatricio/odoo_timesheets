@@ -2,7 +2,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:odoo_apexive/blocs/bloc_exports.dart';
 import 'package:odoo_apexive/models/task_timer.dart';
-import 'package:odoo_apexive/models/ticker.dart';
 import 'package:odoo_apexive/presentation/screens/task_detail_screen.dart';
 import 'package:odoo_apexive/presentation/styles/app_dimens.dart';
 import 'package:odoo_apexive/presentation/styles/vector_graphics.dart';
@@ -18,19 +17,15 @@ class TimerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final timerBloc = TimerBloc(
-      ticker: const Ticker(),
-      taskTimer: taskTimer,
-    );
     return BlocProvider(
-      create: (context) => timerBloc,
+      create: (context) => taskTimer.timerBloc,
       child: GestureDetector(
         onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => BlocProvider.value(
-                value: timerBloc,
+                value: taskTimer.timerBloc,
                 child: const TaskDetailScreen(),
               ),
             ),
@@ -80,8 +75,7 @@ class _Data extends StatelessWidget {
           const SizedBox(width: AppDimens.s),
           Flexible(
             child: _InfoColumn(
-              task: taskTimer.task,
-              project: taskTimer.project,
+              taskTimer: taskTimer,
             ),
           ),
           const _ClockButton()
@@ -108,12 +102,10 @@ class YellowBar extends StatelessWidget {
 class _InfoColumn extends StatelessWidget {
   const _InfoColumn({
     super.key,
-    required this.task,
-    required this.project,
+    required this.taskTimer,
   });
 
-  final String task;
-  final String project;
+  final TaskTimer taskTimer;
 
   @override
   Widget build(BuildContext context) {
@@ -121,9 +113,11 @@ class _InfoColumn extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _CardTextLine(
-          svgIconPath: AppVectorGraphics.starBorderOutlined,
+          svgIconPath: taskTimer.isFavourite
+              ? AppVectorGraphics.starFilled
+              : AppVectorGraphics.starBorderOutlined,
           text: Text(
-            task,
+            taskTimer.task,
             style: Theme.of(context)
                 .textTheme
                 .titleMedium!
@@ -134,7 +128,7 @@ class _InfoColumn extends StatelessWidget {
         _CardTextLine(
           svgIconPath: AppVectorGraphics.suitcaseBorderOutlined,
           text: Text(
-            project,
+            taskTimer.project,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
         ),
