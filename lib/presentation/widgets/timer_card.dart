@@ -2,9 +2,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:odoo_apexive/blocs/bloc_exports.dart';
 import 'package:odoo_apexive/models/task_timer.dart';
-import 'package:odoo_apexive/presentation/screens/task_detail_screen.dart';
+import 'package:odoo_apexive/presentation/screens/task_detail/task_detail_screen.dart';
 import 'package:odoo_apexive/presentation/styles/app_dimens.dart';
 import 'package:odoo_apexive/presentation/styles/vector_graphics.dart';
+import 'package:odoo_apexive/presentation/widgets/card/card_container.dart';
+import 'package:odoo_apexive/presentation/widgets/card/title_label.dart';
+import 'package:odoo_apexive/presentation/widgets/card/value_label.dart';
+import 'package:odoo_apexive/presentation/widgets/card/yellow_bar.dart';
 import 'package:odoo_apexive/utils/utils.dart';
 
 class TimerCard extends StatelessWidget {
@@ -21,38 +25,14 @@ class TimerCard extends StatelessWidget {
       create: (context) => taskTimer.timerBloc,
       child: GestureDetector(
         onTap: () {
-          Navigator.push(
+          Navigator.pushNamed(
             context,
-            MaterialPageRoute(
-              builder: (context) => BlocProvider.value(
-                value: taskTimer.timerBloc,
-                child: const TaskDetailScreen(),
-              ),
-            ),
+            TaskDetailScreen.routeName,
+            arguments: taskTimer,
           );
         },
-        child: _Card(taskTimer: taskTimer),
+        child: CardContainer(child: _Data(taskTimer: taskTimer)),
       ),
-    );
-  }
-}
-
-class _Card extends StatelessWidget {
-  const _Card({
-    super.key,
-    required this.taskTimer,
-  });
-
-  final TaskTimer taskTimer;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(AppDimens.s),
-          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.08)),
-      padding: const EdgeInsets.all(AppDimens.m),
-      child: _Data(taskTimer: taskTimer),
     );
   }
 }
@@ -85,20 +65,6 @@ class _Data extends StatelessWidget {
   }
 }
 
-class YellowBar extends StatelessWidget {
-  const YellowBar({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: AppDimens.xxs,
-      color: const Color(0xFFFFC629),
-    );
-  }
-}
-
 class _InfoColumn extends StatelessWidget {
   const _InfoColumn({
     super.key,
@@ -116,29 +82,17 @@ class _InfoColumn extends StatelessWidget {
           svgIconPath: taskTimer.isFavourite
               ? AppVectorGraphics.starFilled
               : AppVectorGraphics.starBorderOutlined,
-          text: Text(
-            taskTimer.task,
-            style: Theme.of(context)
-                .textTheme
-                .titleMedium!
-                .copyWith(fontWeight: FontWeight.bold),
-          ),
+          child: ValueLabel(taskTimer.task),
         ),
         const SizedBox(height: AppDimens.xs),
         _CardTextLine(
           svgIconPath: AppVectorGraphics.suitcaseBorderOutlined,
-          text: Text(
-            taskTimer.project,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
+          child: TitleLabel(taskTimer.project),
         ),
         const SizedBox(height: AppDimens.xs),
-        _CardTextLine(
+        const _CardTextLine(
           svgIconPath: AppVectorGraphics.clockBorderOutlined,
-          text: Text(
-            'Deadline 07/20/2023',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
+          child: TitleLabel('Deadline 07/20/2023'),
         ),
       ],
     );
@@ -148,11 +102,11 @@ class _InfoColumn extends StatelessWidget {
 class _CardTextLine extends StatelessWidget {
   const _CardTextLine({
     required this.svgIconPath,
-    required this.text,
+    required this.child,
   });
 
   final String svgIconPath;
-  final Text text;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +126,7 @@ class _CardTextLine extends StatelessWidget {
           ),
         ),
         const SizedBox(width: AppDimens.xs),
-        Flexible(child: text)
+        Flexible(child: child)
       ],
     );
   }
@@ -188,8 +142,8 @@ class _ClockButton extends StatelessWidget {
     return BlocBuilder<TimerBloc, TimerState>(
       buildWhen: (prev, state) => prev.runtimeType != state.runtimeType,
       builder: (context, state) {
-        final duration =
-            context.select((TimerBloc bloc) => bloc.state.duration);
+        final secondsLeft =
+            context.select((TimerBloc bloc) => bloc.state.secondsLeft);
 
         final textColor = state is TimerRunInProgress
             ? Theme.of(context).colorScheme.onPrimaryContainer
@@ -203,23 +157,7 @@ class _ClockButton extends StatelessWidget {
             state is TimerRunInProgress ? Icons.pause : Icons.play_arrow;
 
         return GestureDetector(
-          onTap: () {
-            switch (state) {
-              case TimerInitial():
-                context.read<TimerBloc>().add(const TimerStarted());
-                break;
-              case TimerRunInProgress():
-                context.read<TimerBloc>().add(const TimerPaused());
-                break;
-              case TimerRunPause():
-                context.read<TimerBloc>().add(const TimerResumed());
-                break;
-              case TimerRunComplete():
-                context.read<TimerBloc>().add(const TimerReset());
-                context.read<TimerBloc>().add(const TimerStarted());
-                break;
-            }
-          },
+          onTap: () => context.read<TimerBloc>().add(const PlayPauseButton()),
           child: Container(
             padding: const EdgeInsets.symmetric(
               horizontal: AppDimens.m,
@@ -234,7 +172,7 @@ class _ClockButton extends StatelessWidget {
             child: Row(
               children: [
                 Text(
-                  Utils.formatDuration(duration),
+                  Utils.formatDuration(secondsDuration: secondsLeft),
                   style: Theme.of(context)
                       .textTheme
                       .labelLarge!

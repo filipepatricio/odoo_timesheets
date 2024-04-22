@@ -5,13 +5,16 @@ import 'package:odoo_apexive/blocs/create_timer_bloc/create_timer_bloc.dart';
 import 'package:odoo_apexive/models/task_timer.dart';
 import 'package:odoo_apexive/presentation/styles/app_dimens.dart';
 import 'package:odoo_apexive/presentation/styles/vector_graphics.dart';
+import 'package:odoo_apexive/presentation/widgets/app_bar/app_bar_small_title.dart';
 import 'package:odoo_apexive/presentation/widgets/gradient_scaffold.dart';
-import 'package:odoo_apexive/presentation/widgets/main_app_bar.dart';
+import 'package:odoo_apexive/presentation/widgets/app_bar/main_app_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:odoo_apexive/presentation/widgets/opacity_button.dart';
 
 class CreateTimerScreen extends StatelessWidget {
   const CreateTimerScreen({super.key});
+
+  static const routeName = '/createTimer';
 
   @override
   Widget build(BuildContext context) {
@@ -23,13 +26,13 @@ class CreateTimerScreen extends StatelessWidget {
 
             return FormBlocListener<CreateTimerFormBloc, String, String>(
               onSubmitting: (context, state) {
-                print("submitting");
+                debugPrint("submitting");
               },
               onSubmissionFailed: (context, state) {
-                print("failed $state");
+                debugPrint("failed $state");
               },
               onFailure: (context, state) {
-                print("failure");
+                debugPrint("failure");
               },
               onSuccess: (context, state) {
                 context.read<TaskListBloc>().add(
@@ -53,13 +56,8 @@ class CreateTimerScreen extends StatelessWidget {
                         Navigator.pop(context);
                       },
                       child: const Icon(Icons.arrow_back_ios_new_rounded)),
-                  title: Text(
-                    AppLocalizations.of(context)!.createTimer,
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineSmall!
-                        .copyWith(fontWeight: FontWeight.bold),
-                  ),
+                  title: AppBarSmallTitle(
+                      title: AppLocalizations.of(context)!.createTimer),
                 ),
                 body: ScrollableFormBlocManager(
                   formBloc: formBloc,

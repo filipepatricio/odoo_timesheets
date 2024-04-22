@@ -4,5 +4,8 @@
   "task": "Task",
   "project": "Project",
   "description": "Description",
-  "makeFavorite": "Make favorite"
+  "makeFavorite": "Make favorite",
+  "details": "Details",
+  "deadline": "Deadline",
+  "assignedTo": "Assigned to"
 }

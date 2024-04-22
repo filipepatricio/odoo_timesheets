@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import 'package:odoo_apexive/blocs/bloc_exports.dart';
 import 'package:odoo_apexive/models/ticker.dart';
 
@@ -11,11 +10,8 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
   TimerBloc({required int duration})
       : _duration = duration,
         super(TimerInitial(duration)) {
-    on<TimerStarted>(_onStarted);
-    on<TimerPaused>(_onPaused);
-    on<TimerResumed>(_onResumed);
-    on<TimerStopped>(_onStopped);
-    on<TimerReset>(_onReset);
+    on<PlayPauseButton>(_onPlayPauseButton);
+    on<StopButton>(_onStopButton);
     on<_TimerTicked>(_onTicked);
   }
 
@@ -24,46 +20,67 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
 
   StreamSubscription<int>? _tickerSubscription;
 
+  void _onPlayPauseButton(PlayPauseButton event, Emitter<TimerState> emit) {
+    switch (state) {
+      case TimerInitial():
+        _onStarted(emit);
+        break;
+      case TimerRunInProgress():
+        _onPaused(emit);
+        break;
+      case TimerRunPause():
+        _onResumed(emit);
+        break;
+      case TimerRunComplete():
+        _onReset(emit);
+        _onStarted(emit);
+        break;
+    }
+  }
+
+  void _onStopButton(StopButton event, Emitter<TimerState> emit) {
+    _onStopped(emit);
+  }
+
   @override
   Future<void> close() {
     _tickerSubscription?.cancel();
     return super.close();
   }
 
-  void _onStarted(TimerStarted event, Emitter<TimerState> emit) {
-    emit(TimerRunInProgress(state.duration));
+  void _onStarted(Emitter<TimerState> emit) {
+    emit(TimerRunInProgress(state.secondsLeft));
     _tickerSubscription?.cancel();
     _tickerSubscription = _ticker
-        .tick(ticks: state.duration)
+        .tick(ticks: state.secondsLeft)
         .listen((duration) => add(_TimerTicked(duration: duration)));
   }
 
-  void _onPaused(TimerPaused event, Emitter<TimerState> emit) {
+  void _onPaused(Emitter<TimerState> emit) {
     if (state is TimerRunInProgress) {
       _tickerSubscription?.pause();
-      emit(TimerRunPause(state.duration));
+      emit(TimerRunPause(state.secondsLeft));
     }
   }
 
-  void _onResumed(TimerResumed resume, Emitter<TimerState> emit) {
+  void _onResumed(Emitter<TimerState> emit) {
     if (state is TimerRunPause) {
       _tickerSubscription?.resume();
-      emit(TimerRunInProgress(state.duration));
+      emit(TimerRunInProgress(state.secondsLeft));
     }
   }
 
-  void _onStopped(TimerStopped event, Emitter<TimerState> emit) {
+  void _onStopped(Emitter<TimerState> emit) {
     _tickerSubscription?.cancel();
     emit(const TimerRunComplete());
   }
 
-  void _onReset(TimerReset event, Emitter<TimerState> emit) {
+  void _onReset(Emitter<TimerState> emit) {
     _tickerSubscription?.cancel();
     emit(TimerInitial(_duration));
   }
 
   void _onTicked(_TimerTicked event, Emitter<TimerState> emit) {
-    debugPrint("TimerTicked: $event.duration");
     emit(
       event.duration > 0
           ? TimerRunInProgress(event.duration)

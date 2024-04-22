@@ -23,7 +23,7 @@ class GradientScaffold extends StatelessWidget {
 }
 
 class _GradientBackgroundContainer extends StatelessWidget {
-  const _GradientBackgroundContainer({super.key, required this.child});
+  const _GradientBackgroundContainer({required this.child});
 
   final Widget child;
 

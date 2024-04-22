@@ -9,7 +9,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.centerTitle,
   });
 
-  final Text? title;
+  final Widget? title;
   final List<Widget>? actions;
   final Widget? leading;
   final bool? centerTitle;

@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:odoo_apexive/blocs/bloc_exports.dart';
 import 'package:odoo_apexive/presentation/screens/create_timer_screen.dart';
 import 'package:odoo_apexive/presentation/styles/app_dimens.dart';
+import 'package:odoo_apexive/presentation/widgets/app_bar/app_bar_big_title.dart';
 import 'package:odoo_apexive/presentation/widgets/gradient_scaffold.dart';
-import 'package:odoo_apexive/presentation/widgets/main_app_bar.dart';
+import 'package:odoo_apexive/presentation/widgets/app_bar/main_app_bar.dart';
 import 'package:odoo_apexive/presentation/widgets/timer_card.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -15,10 +16,7 @@ class TimesheetsScreen extends StatelessWidget {
     return GradientScaffold(
       appBar: MainAppBar(
         centerTitle: false,
-        title: Text(
-          AppLocalizations.of(context)!.timeSheets,
-          style: Theme.of(context).textTheme.headlineLarge,
-        ),
+        title: AppBarBigTitle(title: AppLocalizations.of(context)!.timeSheets),
         actions: const [_CreateButton()],
       ),
       body: BlocBuilder<TaskListBloc, TaskListState>(
@@ -39,18 +37,13 @@ class TimesheetsScreen extends StatelessWidget {
 }
 
 class _CreateButton extends StatelessWidget {
-  const _CreateButton({
-    super.key,
-  });
+  const _CreateButton();
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const CreateTimerScreen()),
-        );
+        Navigator.pushNamed(context, CreateTimerScreen.routeName);
       },
       child: Container(
         width: AppDimens.xxxl,
