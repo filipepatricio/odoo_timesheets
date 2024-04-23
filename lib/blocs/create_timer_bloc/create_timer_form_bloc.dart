@@ -49,11 +49,13 @@ class CreateTimerFormBloc extends FormBloc<String, String> {
     switch (state.runtimeType) {
       case const (ProjectsLoaded):
         final projects = (state as ProjectsLoaded).projects;
-        projects.map((e) => projectSelectField.addItem(e)).toList();
+        projectSelectField.updateItems([]);
+        projectSelectField.updateItems(projects);
         break;
       case const (TasksLoaded):
         final tasks = (state as TasksLoaded).tasks;
-        tasks.map((e) => taskSelectField.addItem(e)).toList();
+        taskSelectField.updateItems([]);
+        taskSelectField.updateItems(tasks);
         break;
       default:
         break;
@@ -76,7 +78,7 @@ class CreateTimerFormBloc extends FormBloc<String, String> {
 
       emitSuccess(canSubmitAgain: true);
     } catch (e) {
-      emitFailure(failureResponse: 'Please fill all the fields');
+      emitFailure(failureResponse: 'Please fill Task and Project fields');
     }
   }
 
