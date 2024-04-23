@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:odoo_apexive/blocs/bloc_exports.dart';
-import 'package:odoo_apexive/models/task_timer.dart';
+import 'package:odoo_apexive/data/models/task_timer.dart';
 import 'package:odoo_apexive/presentation/screens/task_detail/details_tab.dart';
 import 'package:odoo_apexive/presentation/screens/task_detail/timesheets_tab.dart';
 import 'package:odoo_apexive/presentation/widgets/app_bar/app_bar_back_button.dart';
@@ -27,7 +27,7 @@ class TaskDetailScreen extends StatelessWidget {
             appBar: MainAppBar(
               centerTitle: true,
               leading: const AppBarBackButton(),
-              title: AppBarSmallTitle(title: taskTimer.task),
+              title: AppBarSmallTitle(title: taskTimer.task.name),
             ),
             body: DefaultTabController(
               length: 2,

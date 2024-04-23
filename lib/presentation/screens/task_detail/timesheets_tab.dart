@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:odoo_apexive/blocs/bloc_exports.dart';
-import 'package:odoo_apexive/models/task_timer.dart';
+import 'package:odoo_apexive/data/models/task_timer.dart';
 import 'package:odoo_apexive/presentation/styles/app_dimens.dart';
 import 'package:odoo_apexive/presentation/widgets/card/card_container.dart';
 import 'package:odoo_apexive/presentation/widgets/card/title_label.dart';
@@ -49,9 +49,7 @@ class TimesheetsTab extends StatelessWidget {
 }
 
 class _Clock extends StatelessWidget {
-  const _Clock({
-    super.key,
-  });
+  const _Clock();
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +90,6 @@ class _Clock extends StatelessWidget {
 
 class _ClockSecondaryButton extends StatelessWidget {
   const _ClockSecondaryButton({
-    super.key,
     required this.iconData,
     required this.onTap,
   });
@@ -123,7 +120,6 @@ class _ClockSecondaryButton extends StatelessWidget {
 
 class _ClockPrimaryButton extends StatelessWidget {
   const _ClockPrimaryButton({
-    super.key,
     required this.iconData,
     required this.onTap,
   });

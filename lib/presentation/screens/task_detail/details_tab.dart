@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:odoo_apexive/models/task_timer.dart';
+import 'package:odoo_apexive/data/models/task_timer.dart';
 import 'package:odoo_apexive/presentation/styles/app_dimens.dart';
 import 'package:odoo_apexive/presentation/widgets/card/card_container.dart';
 import 'package:odoo_apexive/presentation/widgets/card/title_label.dart';
@@ -33,7 +33,7 @@ class DetailsTab extends StatelessWidget {
                     children: [
                       const YellowBar(),
                       const SizedBox(width: AppDimens.s),
-                      ValueLabel(taskTimer.project),
+                      ValueLabel(taskTimer.project.name),
                     ],
                   ),
                 ),
@@ -52,8 +52,7 @@ class DetailsTab extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 TitleLabel(AppLocalizations.of(context)!.description),
-                const ValueLabel(
-                    'As a user, I would like to be able to buy a subscription, this would allow me to get a discount on the products and on the second stage of diagnosis'),
+                ValueLabel(taskTimer.project.description),
               ],
             ),
           ),

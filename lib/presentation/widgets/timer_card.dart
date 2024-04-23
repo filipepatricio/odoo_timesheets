@@ -1,7 +1,7 @@
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:odoo_apexive/blocs/bloc_exports.dart';
-import 'package:odoo_apexive/models/task_timer.dart';
+import 'package:odoo_apexive/data/models/task_timer.dart';
 import 'package:odoo_apexive/presentation/screens/task_detail/task_detail_screen.dart';
 import 'package:odoo_apexive/presentation/styles/app_dimens.dart';
 import 'package:odoo_apexive/presentation/styles/vector_graphics.dart';
@@ -39,7 +39,6 @@ class TimerCard extends StatelessWidget {
 
 class _Data extends StatelessWidget {
   const _Data({
-    super.key,
     required this.taskTimer,
   });
 
@@ -67,7 +66,6 @@ class _Data extends StatelessWidget {
 
 class _InfoColumn extends StatelessWidget {
   const _InfoColumn({
-    super.key,
     required this.taskTimer,
   });
 
@@ -79,15 +77,15 @@ class _InfoColumn extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _CardTextLine(
-          svgIconPath: taskTimer.isFavourite
+          svgIconPath: taskTimer.isFavorite
               ? AppVectorGraphics.starFilled
               : AppVectorGraphics.starBorderOutlined,
-          child: ValueLabel(taskTimer.task),
+          child: ValueLabel(taskTimer.task.name),
         ),
         const SizedBox(height: AppDimens.xs),
         _CardTextLine(
           svgIconPath: AppVectorGraphics.suitcaseBorderOutlined,
-          child: TitleLabel(taskTimer.project),
+          child: TitleLabel(taskTimer.project.name),
         ),
         const SizedBox(height: AppDimens.xs),
         const _CardTextLine(
@@ -133,9 +131,7 @@ class _CardTextLine extends StatelessWidget {
 }
 
 class _ClockButton extends StatelessWidget {
-  const _ClockButton({
-    super.key,
-  });
+  const _ClockButton();
 
   @override
   Widget build(BuildContext context) {

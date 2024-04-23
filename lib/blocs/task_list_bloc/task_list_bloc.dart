@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:odoo_apexive/blocs/bloc_exports.dart';
-import 'package:odoo_apexive/models/task_timer.dart';
+import 'package:odoo_apexive/data/models/task_timer.dart';
 
 part 'task_list_event.dart';
 part 'task_list_state.dart';

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:odoo_apexive/blocs/bloc_exports.dart';
-import 'package:odoo_apexive/models/ticker.dart';
+import 'package:odoo_apexive/data/models/ticker.dart';
 
 part 'timer_event.dart';
 part 'timer_state.dart';

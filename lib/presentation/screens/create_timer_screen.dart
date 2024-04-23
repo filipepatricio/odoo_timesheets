@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:odoo_apexive/blocs/bloc_exports.dart';
-import 'package:odoo_apexive/blocs/create_timer_bloc/create_timer_bloc.dart';
-import 'package:odoo_apexive/models/task_timer.dart';
+import 'package:odoo_apexive/blocs/create_timer_bloc/create_timer_form_bloc.dart';
+import 'package:odoo_apexive/data/models/data_type.dart';
+import 'package:odoo_apexive/data/repository/timesheets_repo.dart';
 import 'package:odoo_apexive/presentation/styles/app_dimens.dart';
 import 'package:odoo_apexive/presentation/styles/vector_graphics.dart';
 import 'package:odoo_apexive/presentation/widgets/app_bar/app_bar_small_title.dart';
@@ -18,8 +19,22 @@ class CreateTimerScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-        create: (context) => CreateTimerFormBloc(),
+    final createTimerBloc = TimesheetsApiBloc(TimesheetsRepoImpl());
+    final taskListBloc = context.read<TaskListBloc>();
+    final formBloc = CreateTimerFormBloc(
+      createTimerBloc: createTimerBloc,
+      taskListBloc: taskListBloc,
+    );
+
+    return MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => formBloc,
+          ),
+          BlocProvider(
+            create: (context) => createTimerBloc,
+          )
+        ],
         child: Builder(
           builder: (context) {
             final formBloc = BlocProvider.of<CreateTimerFormBloc>(context);
@@ -33,19 +48,10 @@ class CreateTimerScreen extends StatelessWidget {
               },
               onFailure: (context, state) {
                 debugPrint("failure");
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(state.failureResponse!)));
               },
               onSuccess: (context, state) {
-                context.read<TaskListBloc>().add(
-                      AddTaskTimer(
-                        taskTimer: TaskTimer(
-                          task: formBloc.taskSelectField.state.value ?? "",
-                          project:
-                              formBloc.projectSelectField.state.value ?? "",
-                          description: formBloc.descriptionTextField.value,
-                          isFavourite: formBloc.isFavoriteCheckBox.value,
-                        ),
-                      ),
-                    );
                 Navigator.pop(context);
               },
               child: GradientScaffold(
@@ -70,6 +76,9 @@ class CreateTimerScreen extends StatelessWidget {
                             _FormDropDown(
                               selectField: formBloc.projectSelectField,
                               labelText: AppLocalizations.of(context)!.project,
+                              onChanged: (value) {
+                                formBloc.onProjectChanged(value);
+                              },
                             ),
                             _FormDropDown(
                               selectField: formBloc.taskSelectField,
@@ -107,21 +116,23 @@ class CreateTimerScreen extends StatelessWidget {
 
 class _FormDropDown extends StatelessWidget {
   const _FormDropDown({
-    super.key,
     required this.selectField,
     required this.labelText,
+    this.onChanged,
   });
 
-  final SelectFieldBloc<String, dynamic> selectField;
+  final SelectFieldBloc<TimesheetsDataType, dynamic> selectField;
   final String labelText;
+  final Function(TimesheetsDataType?)? onChanged;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: AppDimens.xxxc,
-      child: DropdownFieldBlocBuilder<String>(
+      child: DropdownFieldBlocBuilder<TimesheetsDataType>(
         selectFieldBloc: selectField,
         showEmptyItem: false,
+        onChanged: onChanged,
         decoration: InputDecoration(
           suffixIcon: Padding(
             padding: const EdgeInsets.only(right: AppDimens.ml),
@@ -142,7 +153,7 @@ class _FormDropDown extends StatelessWidget {
           ),
         ),
         itemBuilder: (context, value) => FieldItem(
-          child: Text(value),
+          child: Text(value.name),
         ),
       ),
     );
@@ -151,7 +162,6 @@ class _FormDropDown extends StatelessWidget {
 
 class _FormCheckBoxField extends StatelessWidget {
   const _FormCheckBoxField({
-    super.key,
     required this.booleanFieldBloc,
     required this.text,
   });
@@ -177,7 +187,6 @@ class _FormCheckBoxField extends StatelessWidget {
 
 class _FormTextField extends StatelessWidget {
   const _FormTextField({
-    super.key,
     required this.textFieldBloc,
     required this.hintText,
   });
