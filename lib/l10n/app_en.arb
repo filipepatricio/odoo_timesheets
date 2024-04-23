@@ -7,5 +7,8 @@
   "makeFavorite": "Make favorite",
   "details": "Details",
   "deadline": "Deadline",
-  "assignedTo": "Assigned to"
+  "assignedTo": "Assigned to",
+  "empty_timesheets_title": "You don’t have any local timesheets",
+  "empty_timesheets_call_to_action": "Create a timer to to begin tracking time",
+  "get_started": "Get Started"
 }
