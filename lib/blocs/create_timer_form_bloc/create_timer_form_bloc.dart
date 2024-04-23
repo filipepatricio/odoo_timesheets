@@ -9,14 +9,12 @@ import 'package:odoo_apexive/data/models/task_timer.dart';
 
 class CreateTimerFormBloc extends FormBloc<String, String> {
   CreateTimerFormBloc({
-    required TimesheetsApiBloc createTimerBloc,
+    required TimesheetsApiBloc timesheetsApiBloc,
     required TaskListBloc taskListBloc,
-  })  : _createTimerBloc = createTimerBloc,
+  })  : _timesheetsApiBloc = timesheetsApiBloc,
         _taskListBloc = taskListBloc,
         super(autoValidate: false) {
-    _createTimerSubscription =
-        _createTimerBloc.stream.listen(onCreateTimerDataLoaded);
-    _createTimerBloc.add(const LoadProjectsEvent());
+    _loadProjects();
     addFieldBlocs(fieldBlocs: [
       taskSelectField,
       projectSelectField,
@@ -24,9 +22,10 @@ class CreateTimerFormBloc extends FormBloc<String, String> {
       isFavoriteCheckBox,
     ]);
   }
-  final TimesheetsApiBloc _createTimerBloc;
+
+  final TimesheetsApiBloc _timesheetsApiBloc;
   final TaskListBloc _taskListBloc;
-  late StreamSubscription _createTimerSubscription;
+  late StreamSubscription _timesheetsApiSubscription;
 
   final taskSelectField = SelectFieldBloc<TimesheetsDataType, dynamic>(
     validators: [FieldBlocValidators.required],
@@ -39,11 +38,17 @@ class CreateTimerFormBloc extends FormBloc<String, String> {
 
   @override
   Future<void> close() {
-    _createTimerSubscription.cancel();
+    _timesheetsApiSubscription.cancel();
     return super.close();
   }
 
-  void onCreateTimerDataLoaded(TimesheetsApiState state) {
+  void _loadProjects() {
+    _timesheetsApiSubscription =
+        _timesheetsApiBloc.stream.listen(_onTimesheetsDataLoaded);
+    _timesheetsApiBloc.add(const LoadProjectsEvent());
+  }
+
+  void _onTimesheetsDataLoaded(TimesheetsApiState state) {
     debugPrint(state.toString());
 
     switch (state.runtimeType) {
@@ -84,7 +89,7 @@ class CreateTimerFormBloc extends FormBloc<String, String> {
 
   void onProjectChanged(TimesheetsDataType? value) {
     if (value != null) {
-      _createTimerBloc.add(LoadTasksEvent(project: value as Project));
+      _timesheetsApiBloc.add(LoadTasksEvent(project: value as Project));
     }
   }
 }

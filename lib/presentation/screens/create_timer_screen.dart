@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:odoo_apexive/blocs/bloc_exports.dart';
-import 'package:odoo_apexive/blocs/create_timer_bloc/create_timer_form_bloc.dart';
+import 'package:odoo_apexive/blocs/create_timer_form_bloc/create_timer_form_bloc.dart';
 import 'package:odoo_apexive/data/models/data_type.dart';
 import 'package:odoo_apexive/data/repository/timesheets_repo.dart';
 import 'package:odoo_apexive/presentation/styles/app_dimens.dart';
@@ -22,7 +22,7 @@ class CreateTimerScreen extends StatelessWidget {
     final createTimerBloc = TimesheetsApiBloc(TimesheetsRepoImpl());
     final taskListBloc = context.read<TaskListBloc>();
     final formBloc = CreateTimerFormBloc(
-      createTimerBloc: createTimerBloc,
+      timesheetsApiBloc: createTimerBloc,
       taskListBloc: taskListBloc,
     );
 
