@@ -3,7 +3,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:odoo_apexive/blocs/bloc_exports.dart';
 import 'package:odoo_apexive/blocs/create_timer_form_bloc/create_timer_form_bloc.dart';
 import 'package:odoo_apexive/data/models/data_type.dart';
-import 'package:odoo_apexive/data/repository/timesheets_repo.dart';
+import 'package:odoo_apexive/data/models/project.dart';
+import 'package:odoo_apexive/data/repository/timesheets_repo_impl.dart';
 import 'package:odoo_apexive/presentation/styles/app_dimens.dart';
 import 'package:odoo_apexive/presentation/styles/vector_graphics.dart';
 import 'package:odoo_apexive/presentation/widgets/app_bar/app_bar_small_title.dart';
@@ -19,10 +20,10 @@ class CreateTimerScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final createTimerBloc = TimesheetsApiBloc(TimesheetsRepoImpl());
+    final timesheetsApiBloc = TimesheetsApiBloc(TimesheetsRepoImpl());
     final taskListBloc = context.read<TaskListBloc>();
     final formBloc = CreateTimerFormBloc(
-      timesheetsApiBloc: createTimerBloc,
+      timesheetsApiBloc: timesheetsApiBloc,
       taskListBloc: taskListBloc,
     );
 
@@ -32,13 +33,11 @@ class CreateTimerScreen extends StatelessWidget {
             create: (context) => formBloc,
           ),
           BlocProvider(
-            create: (context) => createTimerBloc,
+            create: (context) => timesheetsApiBloc,
           )
         ],
         child: Builder(
           builder: (context) {
-            final formBloc = BlocProvider.of<CreateTimerFormBloc>(context);
-
             return FormBlocListener<CreateTimerFormBloc, String, String>(
               onSubmitting: (context, state) {
                 debugPrint("submitting");
@@ -54,57 +53,82 @@ class CreateTimerScreen extends StatelessWidget {
               onSuccess: (context, state) {
                 Navigator.pop(context);
               },
-              child: GradientScaffold(
-                appBar: MainAppBar(
-                  centerTitle: true,
-                  leading: GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Icon(Icons.arrow_back_ios_new_rounded)),
-                  title: AppBarSmallTitle(
-                      title: AppLocalizations.of(context)!.createTimer),
-                ),
-                body: ScrollableFormBlocManager(
-                  formBloc: formBloc,
-                  child: Column(
-                    children: [
-                      SingleChildScrollView(
-                        physics: const ClampingScrollPhysics(),
-                        child: Column(
-                          children: [
-                            _FormDropDown(
-                              selectField: formBloc.projectSelectField,
-                              labelText: AppLocalizations.of(context)!.project,
-                              onChanged: (value) {
-                                formBloc.onProjectChanged(value);
-                              },
-                            ),
-                            _FormDropDown(
-                              selectField: formBloc.taskSelectField,
-                              labelText: AppLocalizations.of(context)!.task,
-                            ),
-                            _FormTextField(
-                              textFieldBloc: formBloc.descriptionTextField,
-                              hintText:
-                                  AppLocalizations.of(context)!.description,
-                            ),
-                            _FormCheckBoxField(
-                              booleanFieldBloc: formBloc.isFavoriteCheckBox,
-                              text: AppLocalizations.of(context)!.makeFavorite,
-                            ),
-                          ],
+              child: BlocListener<TimesheetsApiBloc, TimesheetsApiState>(
+                bloc: timesheetsApiBloc,
+                listener: (context, state) {
+                  if (state is TimesheetsApiErrorState) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(state.error),
+                        action: SnackBarAction(
+                          label: "Retry",
+                          onPressed: state is TimesheetsApiProjectsRequestError
+                              ? () => timesheetsApiBloc
+                                  .add(const LoadProjectsEvent())
+                              : () => timesheetsApiBloc.add(LoadTasksEvent(
+                                  project: formBloc.projectSelectField.value
+                                      as Project)),
                         ),
                       ),
-                      const Spacer(),
-                      OpacityButton(
-                        title: AppLocalizations.of(context)!.createTimer,
+                    );
+                  }
+
+                  if (state is TimesheetsApiProjectsRequestError) {}
+                },
+                child: GradientScaffold(
+                  appBar: MainAppBar(
+                    centerTitle: true,
+                    leading: GestureDetector(
                         onTap: () {
-                          //TODO: form validation with formBloc.submit() is not working
-                          formBloc.onSubmitting();
+                          Navigator.pop(context);
                         },
-                      ),
-                    ],
+                        child: const Icon(Icons.arrow_back_ios_new_rounded)),
+                    title: AppBarSmallTitle(
+                        title: AppLocalizations.of(context)!.createTimer),
+                  ),
+                  body: ScrollableFormBlocManager(
+                    formBloc: formBloc,
+                    child: Column(
+                      children: [
+                        SingleChildScrollView(
+                          physics: const ClampingScrollPhysics(),
+                          child: Column(
+                            children: [
+                              _FormDropDown(
+                                selectField: formBloc.projectSelectField,
+                                labelText:
+                                    AppLocalizations.of(context)!.project,
+                                onChanged: (value) {
+                                  formBloc.onProjectChanged(value);
+                                },
+                              ),
+                              _FormDropDown(
+                                selectField: formBloc.taskSelectField,
+                                labelText: AppLocalizations.of(context)!.task,
+                              ),
+                              _FormTextField(
+                                textFieldBloc: formBloc.descriptionTextField,
+                                hintText:
+                                    AppLocalizations.of(context)!.description,
+                              ),
+                              _FormCheckBoxField(
+                                booleanFieldBloc: formBloc.isFavoriteCheckBox,
+                                text:
+                                    AppLocalizations.of(context)!.makeFavorite,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Spacer(),
+                        OpacityButton(
+                          title: AppLocalizations.of(context)!.createTimer,
+                          onTap: () {
+                            //TODO: form validation with formBloc.submit() is not working
+                            formBloc.onSubmitting();
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

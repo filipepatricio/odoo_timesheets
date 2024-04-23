@@ -1,27 +1,27 @@
 [
   {
     "id": 11,
-    "name": "Project 1 - Task 1",
+    "name": "1 - Task 1",
     "duration": 30
   },
   {
     "id": 12,
-    "name": "Project 1 - Task 2",
+    "name": "1 - Task 2",
     "duration": 50
   },
   {
     "id": 13,
-    "name": "Project 1 - Task 3",
+    "name": "1 - Task 3",
     "duration": 70
   },
   {
     "id": 14,
-    "name": "Project 1 - Task 4",
+    "name": "1 - Task 4",
     "duration": 120
   },
   {
     "id": 15,
-    "name": "Project 1 - Task 5",
+    "name": "1 - Task 5",
     "duration": 80
   }
 ]
