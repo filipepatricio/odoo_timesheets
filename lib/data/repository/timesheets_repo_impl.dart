@@ -16,8 +16,8 @@ class TimesheetsRepoImpl extends TimesheetsRepo {
     final String response =
         await rootBundle.loadString('${API.baseUrl}projects.json');
 
-    //Faking network error with 30% chance
-    if (Random().nextInt(10) > 6) {
+    //Faking exception
+    if (_shouldFailWithPercentage(percentage: 0.3)) {
       return Failure(ResultException("Error fetching projects"));
     }
 
@@ -34,8 +34,8 @@ class TimesheetsRepoImpl extends TimesheetsRepo {
     final String response =
         await rootBundle.loadString('${API.baseUrl}tasks-${project.id}.json');
 
-    //Faking network error with 20% chance
-    if (Random().nextInt(10) > 7) {
+    //Faking exception
+    if (_shouldFailWithPercentage(percentage: 0.2)) {
       return Failure(ResultException("Error fetching tasks"));
     }
 
@@ -44,4 +44,7 @@ class TimesheetsRepoImpl extends TimesheetsRepo {
         .toList();
     return Success(tasks);
   }
+
+  bool _shouldFailWithPercentage({required double percentage}) =>
+      Random().nextDouble() < percentage;
 }
