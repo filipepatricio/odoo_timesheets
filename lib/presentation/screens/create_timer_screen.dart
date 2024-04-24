@@ -47,8 +47,6 @@ class CreateTimerScreen extends StatelessWidget {
               },
               onFailure: (context, state) {
                 debugPrint("failure");
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(state.failureResponse!)));
               },
               onSuccess: (context, state) {
                 Navigator.pop(context);
@@ -59,7 +57,12 @@ class CreateTimerScreen extends StatelessWidget {
                   if (state is TimesheetsApiErrorState) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(state.error),
+                        content: Text(
+                          state.error,
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.onError),
+                        ),
+                        backgroundColor: Theme.of(context).colorScheme.error,
                         action: SnackBarAction(
                           label: "Retry",
                           onPressed: state is TimesheetsApiProjectsRequestError
@@ -72,8 +75,6 @@ class CreateTimerScreen extends StatelessWidget {
                       ),
                     );
                   }
-
-                  if (state is TimesheetsApiProjectsRequestError) {}
                 },
                 child: GradientScaffold(
                   appBar: MainAppBar(
